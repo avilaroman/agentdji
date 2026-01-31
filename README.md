@@ -1,79 +1,77 @@
-# Tello Drone Agent
+# Agente de Dron Tello
 
-Control a DJI Tello drone using natural language through a Cloudflare Agents-powered chat interface.
+Controla un dron DJI Tello usando lenguaje natural a través de una interfaz de chat basada en Cloudflare Agents.
 
-## Architecture
+## Arquitectura
 
 ```
-┌─────────────────┐         ┌─────────────────────┐         ┌─────────────────┐         ┌─────────────┐
-│   Chat Agent    │◄──RPC──►│    DroneAgent       │◄───WS──►│   Controller    │◄──UDP──►│ Tello Drone │
-│   (Chat UI)     │         │  (Durable Object)   │         │   (Node.js)     │         │             │
-└─────────────────┘         └─────────────────────┘         └─────────────────┘         └─────────────┘
+┌─────────────────┐ ┌─────────────────────┐ ┌─────────────────┐ ┌───────────────┐
+│ Agente de chat │◄──RPC──►│ DroneAgent │◄───WS──►│ Controlador │◄──UDP──►│ Tello Drone │
+│ (Interfaz de chat) │ │ (Objeto duradero) │ │ (Node.js) │ │ │
+└─────────────────┘ └────────────────────┘ └────────────────┘ └──────────────┘
 ```
 
 <details>
-<summary><strong>Components & Data Flow</strong></summary>
+<summary><strong>Componentes y flujo de datos</strong></summary>
 
-### Components
+### Componentes
 
-| Component | Description |
+| Componente | Descripción |
 |-----------|-------------|
-| **Chat Agent** | React chat UI + AI agent that interprets natural language and calls tools |
-| **DroneAgent** | Cloudflare Durable Object that hosts WebSocket server for controller connections |
-| **Controller** | Node.js app that bridges WebSocket ↔ UDP, handles vision for autonomous missions |
-| **Tello Drone** | DJI Tello drone (receives UDP commands, sends video stream) |
+| **Agente de chat** | Interfaz de usuario de chat de React + agente de IA que interpreta lenguaje natural e invoca herramientas |
+| **DroneAgent** | Objeto duradero de Cloudflare que aloja el servidor WebSocket para las conexiones del controlador |
+| **Controller** | Aplicación Node.js que conecta WebSocket ↔ UDP y gestiona la visión para misiones autónomas |
+| **Tello Drone** | Dron DJI Tello (recibe comandos UDP y envía secuencias de vídeo) |
 
-### Data Flow
+### Flujo de datos
 
-1. **Manual Commands**: User → Chat Agent → `sendCommand` tool → DroneAgent RPC → WebSocket → Controller → UDP → Drone
-2. **Autonomous Mission**: User → Chat Agent → `startMission` tool → DroneAgent → Controller runs detection loop → DroneAgent generates moves via LLM → Controller executes
+1. **Comandos manuales**: Usuario → Agente de chat → herramienta `sendCommand` → DroneAgent RPC → WebSocket → Controlador → UDP → Dron
+2. **Misión autónoma**: Usuario → Agente de chat → herramienta `startMission` → DroneAgent → El controlador ejecuta el bucle de detección → DroneAgent genera movimientos mediante LLM → El controlador los ejecuta
 
-### Tools
+### Herramientas
 
-| Tool | Description |
+| Herramienta | Descripción |
 |------|-------------|
-| `sendCommand` | Send a Tello SDK command directly (e.g., `takeoff`, `land`, `forward 100`, `battery?`) |
-| `startMission` | Start autonomous vision-based mission to fly to a target object |
-| `stopMission` | Stop the current autonomous mission |
-| `getStatus` | Check if controller is connected and current mission status |
-
-</details>
+| `sendCommand` | Envía un comando directamente del SDK de Tello (p. ej., `takeoff`, `land`, `forward 100`, `battery?`) |
+| `startMission` | Inicia una misión autónoma basada en visión para volar hacia un objetivo |
+| `stopMission` | Detiene la misión autónoma actual |
+| `getStatus` | Verifica si el controlador está conectado y el estado actual de la misión | </details>
 
 <details>
-<summary><strong>Prerequisites</strong></summary>
+<summary><strong>Requisitos</strong></summary>
 
 - [Node.js](https://nodejs.org/) v18+
-- [Cloudflare account](https://dash.cloudflare.com/sign-up)
-- [OpenAI API key](https://platform.openai.com/api-keys)
-- [Moondream API key](https://moondream.ai/) (for vision/autonomous missions)
-- DJI Tello drone
-- ffmpeg installed (`brew install ffmpeg` on macOS)
+- [Cuenta de Cloudflare](https://dash.cloudflare.com/sign-up)
+- [Clave de API de OpenAI](https://platform.openai.com/api-keys)
+- [Clave de API de Moondream](https://moondream.ai/) (para misiones de visión/autónomas)
+- Dron DJI Tello
+- ffmpeg instalado (`brew install ffmpeg` en macOS)
 
 </details>
 
-## Setup
+## Configuración
 
-### 1. Clone and Install
+### 1. Clonar e instalar
 
 ```bash
 git clone <repo-url>
 cd tello-agent
 
-# Install agent dependencies
+# Instalar las dependencias del agente
 cd agent && npm install
 
-# Install controller dependencies
-cd ../controller && npm install
+# Instalar las dependencias del controlador
+cd ../controller && npm Instalar
 ```
 
-### 2. Configure Environment
+### 2. Configurar el entorno
 
-**Agent** (`agent/.dev.vars`):
+**Agente** (`agent/.dev.vars`):
 ```env
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-**Controller** (`controller/.env`):
+**Controlador** (`controller/.env`):
 ```env
 MOONDREAM_KEY=your_moondream_api_key
 TELLO_IP=192.168.10.1
@@ -82,71 +80,71 @@ VIDEO_PORT=11111
 AGENT_WS_URL=ws://localhost:5173/agents/drone-agent/default
 ```
 
-### 3. Run Locally
+### 3. Ejecutar localmente
 
-**Terminal 1 - Start the Agent:**
+**Terminal 1 - Iniciar el agente:**
 ```bash
 cd agent
 npm run dev
 ```
 
-**Terminal 2 - Connect to Tello WiFi, then start Controller:**
+**Terminal 2 - Conectarse a la red Wi-Fi de Tello e iniciar Controlador:**
 ```bash
 cd controller
 npm run dev
 ```
 
-**Terminal 3 - Open the Chat UI:**
+**Terminal 3 - Abrir la interfaz de chat:**
 ```
 http://localhost:5173
 ```
 
-## Usage
+## Uso
 
-### Manual Control
+### Control manual
 
-Chat naturally with the agent:
-- "Take off"
-- "Check the battery level"
-- "Move forward 1 meter"
-- "Turn right 90 degrees"
-- "Land"
+Chatea de forma natural con el agente:
+- "Despegar"
+- "Comprobar el nivel de batería"
+- "Avanzar 1 metro"
+- "Girar 90 grados a la derecha"
+- "Aterrizar"
 
-The Chat Agent knows all Tello commands and will translate your intent to the correct SDK command.
+El agente de chat conoce todos los comandos de Tello y traducirá tu intención al comando correcto del SDK.
 
-### Autonomous Mission
+### Misión Autónoma
 
-Start a vision-based mission:
-- "Fly to the red cup and land on it"
-- "Find the person and go to them"
+Inicia una misión basada en visión:
+- "Vuela hacia la copa roja y aterriza en ella"
+- "Encuentra a la persona y ve hacia ella"
 
-The drone will:
-1. Take off
-2. Use camera + Moondream vision model to detect the target
-3. LLM generates movement commands based on detection data
-4. Repeat until target covers 80% of frame
-5. Land
+El dron:
+1. Despegará
+2. Usará la cámara y el modelo de visión Moondream para detectar el objetivo
+3. LLM generará comandos de movimiento basados ​​en los datos de detección
+4. Repetirá hasta que el objetivo cubra el 80% del encuadre
+5. Aterrizará
 
-Stop anytime with "Stop the mission".
+Puedes detenerte en cualquier momento pulsando "Detener la misión".
 
 <details>
-<summary><strong>Deployment</strong></summary>
+<summary><strong>Implementación</strong></summary>
 
-### Deploy Agent to Cloudflare
+### Implementar el agente en Cloudflare
 
 ```bash
 cd agent
 
-# Set production secret
+# Establecer el secreto de producción
 npx wrangler secret put OPENAI_API_KEY
 
-# Deploy
+# Implementar
 npm run deploy
 ```
 
-### Update Controller for Production
+### Actualizar el controlador para producción
 
-Update `controller/.env`:
+Actualizar `controller/.env`:
 ```env
 AGENT_WS_URL=wss://tello-agent.<your-subdomain>.workers.dev/agents/drone-agent/default
 ```
@@ -154,24 +152,24 @@ AGENT_WS_URL=wss://tello-agent.<your-subdomain>.workers.dev/agents/drone-agent/d
 </details>
 
 <details>
-<summary><strong>Project Structure</strong></summary>
+<summary><strong>Estructura del proyecto</strong></summary>
 
 ```
 tello-agent/
-├── agent/                    # Cloudflare Worker + React UI
-│   ├── src/
-│   │   ├── server.ts         # DroneAgent + Chat agent
-│   │   ├── tools.ts          # Tool definitions
-│   │   ├── telloCommands.ts  # Tello SDK commands + prompts
-│   │   └── app.tsx           # Chat UI
-│   ├── wrangler.jsonc        # Cloudflare config
-│   └── package.json
+├── agent/ # Cloudflare Worker + React UI
+│ ├── src/
+│ │ ├── server.ts # DroneAgent + Agente de chat
+│ │ ├── tools.ts # Definiciones de herramientas
+│ │ ├── telloCommands.ts # Comandos + indicaciones del SDK de Tello
+│ │ └── app.tsx # Interfaz de chat
+│ ├── wrangler.jsonc # Configuración de Cloudflare
+│ └── package.json
 │
-├── controller/               # Node.js drone controller
-│   ├── src/
-│   │   ├── index.ts          # WebSocket client + UDP bridge
-│   │   └── utils.ts          # Video capture utilities
-│   └── package.json
+├── controller/ # Controlador de drones Node.js
+│ ├── src/
+│ │ ├── index.ts # Cliente WebSocket + Puente UDP
+│ │ └── utils.ts # Vídeo Utilidades de captura
+│ └── paquete.json
 │
 └── README.md
 ```
@@ -179,25 +177,14 @@ tello-agent/
 </details>
 
 <details>
-<summary><strong>Tello SDK Commands Reference</strong></summary>
+<summary><strong>Referencia de comandos del SDK de Tello</strong></summary>
 
-| Command | Description |
+| Comando | Descripción |
 |---------|-------------|
-| `command` | Enter SDK mode |
-| `takeoff` | Auto takeoff |
-| `land` | Auto landing |
-| `emergency` | Stop motors immediately |
-| `up/down x` | Ascend/descend x cm (20-500) |
-| `left/right x` | Fly left/right x cm (20-500) |
-| `forward/back x` | Fly forward/backward x cm (20-500) |
-| `cw/ccw x` | Rotate clockwise/counterclockwise x degrees (1-360) |
-| `flip x` | Flip (l/r/f/b) |
-| `speed x` | Set speed (10-100 cm/s) |
-| `battery?` | Get battery percentage |
-| `time?` | Get flight time |
-
-</details>
-
-## License
-
-MIT
+| `comando` | Entrar en modo SDK |
+| `despegue` | Despegue automático |
+| `aterrizaje` | Aterrizaje automático |
+| `emergencia` | Detener motores inmediatamente |
+| `arriba/abajo x` | Ascender/descender x cm (20-500) |
+| `izquierda/derecha x` | Volar izquierda/derecha x cm (20-500) |
+| `adelante/atrás x` | Volar f
