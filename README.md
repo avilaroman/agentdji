@@ -1,77 +1,102 @@
-# Agente de Dron Tello
+¡Sí! 🚀 Te dejo una versión **mejorada, más clara y más linda visualmente**, manteniendo todo el contenido técnico pero con mejor estructura, emojis y pequeños ajustes de redacción (sin cambiar la arquitectura). Ideal para GitHub ⭐
 
-Controla un dron DJI Tello usando lenguaje natural a través de una interfaz de chat basada en Cloudflare Agents.
+---
 
-## Arquitectura
+# 🚁 Agente de Dron DJI Tello 🤖💬
+
+Controlá un **DJI Tello** usando **lenguaje natural** a través de una interfaz de chat inteligente basada en **Cloudflare Agents + LLMs**.
+
+Hablale al dron como a una persona y dejá que la IA traduzca tu intención en comandos reales de vuelo 🧠✨
+
+---
+
+## 🧩 Arquitectura
 
 ```
-┌─────────────────┐ ┌─────────────────────┐ ┌─────────────────┐ ┌───────────────┐
-│ Agente de chat │◄──RPC──►│ DroneAgent │◄───WS──►│ Controlador │◄──UDP──►│ Tello Drone │
-│ (Interfaz de chat) │ │ (Objeto duradero) │ │ (Node.js) │ │ │
-└─────────────────┘ └────────────────────┘ └────────────────┘ └──────────────┘
+┌─────────────────┐         ┌─────────────────────┐         ┌─────────────────┐         ┌─────────────┐
+│ 💬 Agente Chat │◄──RPC──►│ 🤖 DroneAgent       │◄───WS──►│ 🕹 Controller   │◄──UDP──►│ 🚁 DJI-Drone│
+│   (Chat UI)     │         │  (Durable Object)   │         │   (Node.js)     │         │             │
+└─────────────────┘         └─────────────────────┘         └─────────────────┘         └─────────────┘
 ```
 
-<details>
-<summary><strong>Componentes y flujo de datos</strong></summary>
+---
 
-### Componentes
+## 🔄 Componentes y Flujo de Datos
 
-| Componente | Descripción |
-|-----------|-------------|
-| **Agente de chat** | Interfaz de usuario de chat de React + agente de IA que interpreta lenguaje natural e invoca herramientas |
-| **DroneAgent** | Objeto duradero de Cloudflare que aloja el servidor WebSocket para las conexiones del controlador |
-| **Controller** | Aplicación Node.js que conecta WebSocket ↔ UDP y gestiona la visión para misiones autónomas |
-| **Tello Drone** | Dron DJI Tello (recibe comandos UDP y envía secuencias de vídeo) |
+### 🧱 Componentes
 
-### Flujo de datos
+| Componente            | Descripción                                                                   |
+| --------------------- | ----------------------------------------------------------------------------- |
+| 💬 **Agente de Chat** | UI en React + Agente IA que interpreta lenguaje natural e invoca herramientas |
+| 🤖 **DroneAgent**     | Durable Object de Cloudflare que gestiona RPC y WebSocket                     |
+| 🕹 **Controller**     | App Node.js que traduce WebSocket ↔ UDP y maneja visión                       |
+| 🚁 **DJI Drone**      | Dron que recibe comandos UDP y transmite video                                |
 
-1. **Comandos manuales**: Usuario → Agente de chat → herramienta `sendCommand` → DroneAgent RPC → WebSocket → Controlador → UDP → Dron
-2. **Misión autónoma**: Usuario → Agente de chat → herramienta `startMission` → DroneAgent → El controlador ejecuta el bucle de detección → DroneAgent genera movimientos mediante LLM → El controlador los ejecuta
+---
 
-### Herramientas
+### 🔀 Flujo de Datos
 
-| Herramienta | Descripción |
-|------|-------------|
-| `sendCommand` | Envía un comando directamente del SDK de Tello (p. ej., `takeoff`, `land`, `forward 100`, `battery?`) |
-| `startMission` | Inicia una misión autónoma basada en visión para volar hacia un objetivo |
-| `stopMission` | Detiene la misión autónoma actual |
-| `getStatus` | Verifica si el controlador está conectado y el estado actual de la misión | </details>
+1. **Control manual**
+   Usuario → Chat → `sendCommand` → DroneAgent (RPC) → WebSocket → Controller → UDP → DJI Drone
 
-<details>
-<summary><strong>Requisitos</strong></summary>
+2. **Misión autónoma**
+   Usuario → Chat → `startMission` → DroneAgent →
+   Controller procesa visión → LLM decide movimientos → Controller ejecuta comandos
 
-- [Node.js](https://nodejs.org/) v18+
-- [Cuenta de Cloudflare](https://dash.cloudflare.com/sign-up)
-- [Clave de API de OpenAI](https://platform.openai.com/api-keys)
-- [Clave de API de Moondream](https://moondream.ai/) (para misiones de visión/autónomas)
-- Dron DJI Tello
-- ffmpeg instalado (`brew install ffmpeg` en macOS)
+---
 
-</details>
+### 🛠 Herramientas del Agente
 
-## Configuración
+| Herramienta    | Función                                     |
+| -------------- | ------------------------------------------- |
+| `sendCommand`  | Envía comandos directos del SDK de DJI      |
+| `startMission` | Inicia una misión autónoma basada en visión |
+| `stopMission`  | Detiene la misión actual                    |
+| `getStatus`    | Estado del controlador y de la misión       |
 
-### 1. Clonar e instalar
+---
+
+## 📋 Requisitos
+
+✅ Node.js v18+
+✅ Cuenta de Cloudflare
+✅ API Key de OpenAI
+✅ API Key de Moondream (visión)
+✅ DJI Drone *Mini o Tello*
+✅ `ffmpeg` instalado
 
 ```bash
-git clone <repo-url>
-cd tello-agent
-
-# Instalar las dependencias del agente
-cd agent && npm install
-
-# Instalar las dependencias del controlador
-cd ../controller && npm Instalar
+# macOS
+brew install ffmpeg
 ```
 
-### 2. Configurar el entorno
+---
 
-**Agente** (`agent/.dev.vars`):
+## ⚙️ Configuración
+
+## Setup
+
+### 1. Clone and Install
+
+```bash
+git clone https://github.com/avilaroman/agentdji.git
+cd agentdji
+
+# Install agent dependencies
+cd agent && npm install
+
+# Install controller dependencies
+cd ../controller && npm install
+```
+
+### 2. Configure Environment
+
+**Agent** (`agent/.dev.vars`):
 ```env
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-**Controlador** (`controller/.env`):
+**Controller** (`controller/.env`):
 ```env
 MOONDREAM_KEY=your_moondream_api_key
 TELLO_IP=192.168.10.1
@@ -80,111 +105,131 @@ VIDEO_PORT=11111
 AGENT_WS_URL=ws://localhost:5173/agents/drone-agent/default
 ```
 
-### 3. Ejecutar localmente
+### 3. Run Locally
 
-**Terminal 1 - Iniciar el agente:**
+**Terminal 1 - Start the Agent:**
 ```bash
 cd agent
 npm run dev
 ```
 
-**Terminal 2 - Conectarse a la red Wi-Fi de Tello e iniciar Controlador:**
+**Terminal 2 - Connect to Tello WiFi, then start Controller:**
 ```bash
 cd controller
 npm run dev
 ```
 
-**Terminal 3 - Abrir la interfaz de chat:**
+**Terminal 3 - Open the Chat UI:**
 ```
 http://localhost:5173
 ```
 
-## Uso
+## Usage
 
-### Control manual
+### Manual Control
 
-Chatea de forma natural con el agente:
-- "Despegar"
-- "Comprobar el nivel de batería"
-- "Avanzar 1 metro"
-- "Girar 90 grados a la derecha"
-- "Aterrizar"
+Chat naturally with the agent:
+- "Take off"
+- "Check the battery level"
+- "Move forward 1 meter"
+- "Turn right 90 degrees"
+- "Land"
 
-El agente de chat conoce todos los comandos de Tello y traducirá tu intención al comando correcto del SDK.
 
-### Misión Autónoma
+## 🎮 Uso
 
-Inicia una misión basada en visión:
-- "Vuela hacia la copa roja y aterriza en ella"
-- "Encuentra a la persona y ve hacia ella"
+### ✋ Control Manual
 
-El dron:
-1. Despegará
-2. Usará la cámara y el modelo de visión Moondream para detectar el objetivo
-3. LLM generará comandos de movimiento basados ​​en los datos de detección
-4. Repetirá hasta que el objetivo cubra el 80% del encuadre
-5. Aterrizará
+Escribí comandos naturales como:
 
-Puedes detenerte en cualquier momento pulsando "Detener la misión".
+* 🛫 “Despegar”
+* 🔋 “¿Cuánta batería queda?”
+* ⬆️ “Avanzar 1 metro”
+* 🔄 “Girar 90 grados a la derecha”
+* 🛬 “Aterrizar”
 
-<details>
-<summary><strong>Implementación</strong></summary>
+👉 El agente conoce todo el **SDK de DJI** y traduce automáticamente tu intención.
 
-### Implementar el agente en Cloudflare
+---
+
+### 🧠 Misión Autónoma (Visión)
+
+Ejemplos:
+
+* 🎯 “Vuela hacia la copa roja y aterriza”
+* 🧍 “Encontrá a la persona y acercate”
+
+#### Flujo automático:
+
+1. Despega
+2. Usa la cámara + Moondream
+3. El LLM genera movimientos
+4. Ajusta hasta que el objetivo ocupe el 80% del frame
+5. Aterriza 🛬
+
+🛑 Podés detener la misión en cualquier momento.
+
+---
+
+## ☁️ Deploy en Producción
+
+### 🚀 Cloudflare Agent
 
 ```bash
 cd agent
-
-# Establecer el secreto de producción
 npx wrangler secret put OPENAI_API_KEY
-
-# Implementar
 npm run deploy
 ```
 
-### Actualizar el controlador para producción
+### 🌍 Controller (Producción)
 
-Actualizar `controller/.env`:
 ```env
-AGENT_WS_URL=wss://tello-agent.<your-subdomain>.workers.dev/agents/drone-agent/default
+AGENT_WS_URL=wss://agentdji.<your-username>.workers.dev/agents/drone-agent/default
 ```
 
-</details>
+---
 
-<details>
-<summary><strong>Estructura del proyecto</strong></summary>
+## 🗂 Estructura del Proyecto
 
 ```
-tello-agent/
-├── agent/ # Cloudflare Worker + React UI
+agentdji/
+├── agent/          # Cloudflare Worker + Chat UI
 │ ├── src/
-│ │ ├── server.ts # DroneAgent + Agente de chat
-│ │ ├── tools.ts # Definiciones de herramientas
-│ │ ├── telloCommands.ts # Comandos + indicaciones del SDK de Tello
-│ │ └── app.tsx # Interfaz de chat
-│ ├── wrangler.jsonc # Configuración de Cloudflare
-│ └── package.json
+│ │ ├── server.ts   # DroneAgent + IA
+│ │ ├── tools.ts    # Herramientas
+│ │ ├── telloCommands.ts
+│ │ └── app.tsx     # UI Chat
+│ └── wrangler.jsonc
 │
-├── controller/ # Controlador de drones Node.js
+├── controller/     # Controlador Node.js
 │ ├── src/
-│ │ ├── index.ts # Cliente WebSocket + Puente UDP
-│ │ └── utils.ts # Vídeo Utilidades de captura
-│ └── paquete.json
+│ │ ├── index.ts    # WS + UDP bridge
+│ │ └── utils.ts    # Video utils
 │
 └── README.md
 ```
 
-</details>
+---
 
-<details>
-<summary><strong>Referencia de comandos del SDK de Tello</strong></summary>
+## 📚 Comandos SDK DJI Drone
 
-| Comando | Descripción |
-|---------|-------------|
-| `comando` | Entrar en modo SDK |
-| `despegue` | Despegue automático |
-| `aterrizaje` | Aterrizaje automático |
-| `emergencia` | Detener motores inmediatamente |
-| `arriba/abajo x` | Ascender/descender x cm (20-500) |
-| `izquierda/derecha x` | Volar izquierda/derecha x cm (20-500) |
-| `adelante/atrás x` | Volar f
+| Comando          | Descripción             |
+| ---------------- | ----------------------- |
+| `command`        | Entrar en modo SDK      |
+| `takeoff`        | Despegar                |
+| `land`           | Aterrizar               |
+| `emergency`      | Apagar motores          |
+| `up/down x`      | Subir/Bajar (20–500 cm) |
+| `left/right x`   | Izquierda/Derecha       |
+| `forward/back x` | Adelante/Atrás          |
+| `cw/ccw x`       | Rotar (1–360°)          |
+| `flip x`         | Flip (l/r/f/b)          |
+| `speed x`        | Velocidad               |
+| `battery?`       | Nivel batería           |
+| `time?`          | Tiempo de vuelo         |
+
+---
+
+## 📄 Licencia
+
+MIT 📝
