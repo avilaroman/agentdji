@@ -1,12 +1,11 @@
-¡Sí! 🚀 Te dejo una versión **mejorada, más clara y más linda visualmente**, manteniendo todo el contenido técnico pero con mejor estructura, emojis y pequeños ajustes de redacción (sin cambiar la arquitectura). Ideal para GitHub ⭐
-
 ---
 
-# 🚁 Agente de Dron DJI Tello 🤖💬
+# 🚁 Agente de Dron DJI Mini/Tello 🤖💬
 
-Controlá un **DJI Tello** usando **lenguaje natural** a través de una interfaz de chat inteligente basada en **Cloudflare Agents + LLMs**.
+Controlá un **DJI Mini o Tello** usando **lenguaje natural** a través de una interfaz de chat inteligente basada en **Cloudflare Agents + LLMs**.
 
-Hablale al dron como a una persona y dejá que la IA traduzca tu intención en comandos reales de vuelo 🧠✨
+Hablarle al dron como a una persona y dejá que la IA traduzca tu intención en comandos reales de vuelo 🧠✨
+
 
 ---
 
