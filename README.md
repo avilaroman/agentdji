@@ -44,6 +44,18 @@ Hablarle al dron como a una persona y dejá que la IA traduzca tu intención en 
 
 ---
 
+## 🖼️ Imágenes de ejemplo
+
+Vista de prueba capturada desde el pipeline de visión del controlador:
+
+![Imagen de ejemplo del dron](controller/drone_image.png)
+
+Versión anotada para depuración de detecciones y objetivos:
+
+![Imagen anotada del dron](controller/drone_image_annotated.png)
+
+---
+
 ### 🛠 Herramientas del Agente
 
 | Herramienta    | Función                                     |
